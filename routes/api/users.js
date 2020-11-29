@@ -5,43 +5,35 @@ const router = require('express').Router();
 const auth = require('../auth');
 const User = mongoose.model('User');
 
-checkUserTagPair = (name, tag) => {
+checkUserTagPair = async (name, tag) => {
     let tagUsed = false;
-    User.find({ username: name }, (err, data) => {
+    await User.find({ username: name }, (err, data) => {
         for (let i = 0; i < data.length; i++) {
-            console.log(`${data[i].tag} : ${tag}`);
             if (data[i].tag == tag) {
                 tagUsed = true;
             }
         }
     });
-    return false;
+    return tagUsed;
 }
 
 // Create user
-router.post('/', auth.optional, (req, res) => {
+router.post('/', auth.optional, async (req, res) => {
     const { body: { user } } = req;
 
+    // Validate
     if (!user.username) return res.status(422).json({ errors: { username: 'is required'} });
     if (!user.password) return res.status(422).json({ errors: { password: 'is required' } });
     if (!user.email) return res.status(422).json({ errors: { email: 'is required' } });
     if (!user.tag) return res.status(422).json({ errors: { tag: 'is required' } });
+    if (await checkUserTagPair(user.username, user.tag)) return res.status(422).json({ errors: { tag: 'is duplicate' } });
 
+    // Create Database Entry
     const finalUser = new User(user);
-
     finalUser.username = user.username;
     finalUser.email = user.email;
-
-    if (checkUserTagPair(user.username, user.tag)) {
-        console.log("Duplicate tag!");
-    } else {
-        console.log("not dup?");
-    }
-    
     finalUser.tag = user.tag;
     finalUser.setPassword(user.password);
-
-    console.log(finalUser.salt);
 
     return finalUser.save().then(() => res.json({ user: finalUser.toAuthJSON() }));
 });
@@ -50,26 +42,11 @@ router.post('/', auth.optional, (req, res) => {
 router.post('/login', auth.optional, (req, res, next) => {
     const { body: { user } } = req;
 
-    if (!user.email) {
-        return res.status(422).json({
-            errors: {
-                email: 'is required',
-            },
-        });
-    }
-
-    if (!user.password) {
-        return res.status(422).json({
-            errors: {
-                password: 'is required',
-            },
-        });
-    }
+    if (!user.username) return res.status(422).json({ errors: { username: 'is required'} });
+    if (!user.password) return res.status(422).json({ errors: { password: 'is required' } });
 
     return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
-        if (err) {
-            return next(err);
-        }
+        if (err) return next(err);
 
         if (passportUser) {
             const user = passportUser;

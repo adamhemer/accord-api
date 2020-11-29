@@ -50,4 +50,10 @@ userSchema.methods.toAuthJSON = function () {
     };
 };
 
-mongoose.model("User", userSchema);
+mongoose.model('User', userSchema);
+
+/*
+(async () => {
+    await mongoose.model('User').deleteMany({}, ()=>{});
+})();
+*/
