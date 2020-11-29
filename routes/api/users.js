@@ -17,7 +17,7 @@ checkUserTagPair = async (name, tag) => {
     return tagUsed;
 }
 
-// Create user
+//POST Create user
 router.post('/', auth.optional, async (req, res) => {
     const { body: { user } } = req;
 
@@ -38,7 +38,7 @@ router.post('/', auth.optional, async (req, res) => {
     return finalUser.save().then(() => res.json({ user: finalUser.toAuthJSON() }));
 });
 
-//POST login route (optional, everyone has access)
+//POST Login route
 router.post('/login', auth.optional, (req, res, next) => {
     const { body: { user } } = req;
 
@@ -59,7 +59,7 @@ router.post('/login', auth.optional, (req, res, next) => {
     })(req, res, next);
 });
 
-//GET current route (required, only authenticated users have access)
+//GET Current route (required, only authenticated users have access)
 router.get('/current', auth.required, (req, res, next) => {
     const { payload: { id } } = req;
 

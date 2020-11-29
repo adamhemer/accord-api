@@ -3,13 +3,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const crypto = require('crypto');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const cors = require('cors');
 const session = require('express-session');
-const { nextTick } = require('process');
 
 // Files
 require('./models/User');
@@ -31,8 +28,6 @@ mongoose.set('debug', true);
 mongoose.promise = global.promise;
 
 // Middleware
-
-
 app.use(cors());
 app.use(morgan('tiny'));
 
@@ -54,22 +49,14 @@ app.use(session({
 // End points
 app.use((req, res, err) => {
     res.status(err.status || 500);
-  
+
     res.json({
-      errors: {
-        message: err.message,
-        error: {},
-      },
+        errors: {
+            message: err.message,
+            error: {},
+        },
     });
-  });
-/*
-app.get("/login", (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
-        if (err) return next(err);
-    });
-});*/
-
-
+});
 
 // Listener
 const listener = app.listen(port, () => {
