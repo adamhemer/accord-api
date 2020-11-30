@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
-const userSchema = new mongoose.Schema({
-    username: { type: String, required: true },
-    tag: { type: Number, required: true },
-    email: { type: String, required: true },
-    salt: { type: String, required: true },
-    hash: { type: String, required: true }
+const messageSchema = new mongoose.Schema({
+    content: { type: String, required: true },
+    userId: { type: Number, required: true },
+    channelId: { type: String, required: true }
 })
