@@ -45,7 +45,7 @@ app.use(session({
     saveUninitialized: false
 }));
 
-// End points
+// Error handling middleware
 app.use((req, res, err) => {
     res.status(err.status || 500);
 
@@ -55,6 +55,15 @@ app.use((req, res, err) => {
             error: {},
         },
     });
+});
+
+// Endpoints
+app.get('/ping', function(req, res) {
+    res.send({ping:'hello this is server and I am alive!'});
+});
+
+app.get('/ping/:id', function(req, res) {
+    res.send({ping:'hello this is server and I am got '+req.params.id});
 });
 
 // Listener

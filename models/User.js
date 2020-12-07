@@ -27,7 +27,7 @@ userSchema.methods.setPassword = function (password) {
 }
 
 userSchema.methods.validatePassword = function(password) {
-    return generateHash(password, this.salt) === hash;
+    return generateHash(password, this.salt) === this.hash;
 }
 
 userSchema.methods.generateJWT = function () {
@@ -45,6 +45,8 @@ userSchema.methods.generateJWT = function () {
 userSchema.methods.toAuthJSON = function () {
     return {
         _id: this._id,
+        tag: this.tag,
+        username: this.username,
         email: this.email,
         token: this.generateJWT(),
     };
