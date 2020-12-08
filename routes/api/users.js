@@ -74,4 +74,18 @@ router.get('/current', auth.required, (req, res, next) => {
         });
 });
 
+//GET Username from userId
+router.get('/identify', auth.optional, (req, res, next) => {
+    if (!req.query.id) return res.status(422).json({ errors: { id: 'is required' } });
+    if (!mongoose.Types.ObjectId.isValid(req.query.id)) return res.status(422).json({ errors: { id: 'is invalid' } });
+
+    return User.findById(req.query.id)
+        .then((user) => {
+            if (!user) {
+                return res.status(400).json({ errors: { error: 'user does not exist' } });
+            }
+            return res.json({ user: { username: user.username } });
+        });
+});
+
 module.exports = router;

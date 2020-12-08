@@ -10,6 +10,8 @@ const session = require('express-session');
 
 // Files
 require('./models/User');
+require('./models/Message');
+require('./models/Channel');
 require('./config/passport');
 require('./routes/auth');
 require('dotenv').config();
